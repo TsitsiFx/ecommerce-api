@@ -1,13 +1,26 @@
-export const addProduct = (req, res) => {
-  // Upload product image
-  // Validate product information
-  // Save product info in database
-  // Return response
-  res.json(req.body);
-}
+import { ProductModel } from "../models/product.js";
 
-export const getProducts = (req, res) => {
-  res.send('All products!');
+export const addProduct = async (req, res, next) => {
+try {
+    // Upload product image
+    // Validate product information
+    // Save product info in database
+    const result = await ProductModel.create(req.body)
+    // Return response
+    res.json(result);
+  } catch (error) {
+  next(error);
+}}
+
+export const getProducts = async (req, res, next) => {
+ try {
+   // Fetch products from database
+   const result = await ProductModel.find();
+   // Return response
+   res.json('All products!');
+ } catch (error) {
+  next(error);
+ }
 }
 
 export const countProducts = (req, res) => {
