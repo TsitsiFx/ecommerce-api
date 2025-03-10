@@ -1,36 +1,42 @@
 import { ProductModel } from "../models/product.js";
+import { addProductValidator } from "../validators/products.js";
 
 export const addProduct = async (req, res, next) => {
-try {
+  try {
     // Upload product image
     // Validate product information
+    const { error, value } = addProductValidator.validate(req.body, {abortEarly: false});
+    if (error) {
+      return res.status(422).json(error);
+    }
     // Save product info in database
-    const result = await ProductModel.create(req.body)
+    const result = await ProductModel.create(value);
+    // Return response
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProducts = async (req, res, next) => {
+  try {
+    // Fetch products from database
+    const result = await ProductModel.find();
     // Return response
     res.json(result);
   } catch (error) {
-  next(error);
-}}
-
-export const getProducts = async (req, res, next) => {
- try {
-   // Fetch products from database
-   const result = await ProductModel.find();
-   // Return response
-   res.json('All products!');
- } catch (error) {
-  next(error);
- }
-}
+    next(error);
+  }
+};
 
 export const countProducts = (req, res) => {
-  res.send('All products counted!');
-}
+  res.send("All products counted!");
+};
 
 export const updateProduct = (req, res) => {
   res.send(`Product with id ${req.params.id} updated!`);
-}
+};
 
 export const deleteProduct = (req, res) => {
-  res.send(`Product with id ${req.params.id} deleted!`)
-}
+  res.send(`Product with id ${req.params.id} deleted!`);
+};
