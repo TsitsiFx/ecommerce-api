@@ -1,6 +1,7 @@
 import express from "express";
 import productsRouter from "./routes/products.js";
 import mongoose from "mongoose";
+import userRouter from "./routes/users.js";
 
 // Make database connection
 await mongoose.connect(process.env.MONGO_URI);
@@ -13,9 +14,10 @@ app.use(express.json());
 
 //Use route
 app.use(productsRouter);
+app.use(userRouter);
 
 // Listen for incoming request
-const port = process.env.PORT || 4700;
+const port = process.env.PORT || 4750;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
