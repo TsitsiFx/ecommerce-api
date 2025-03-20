@@ -7,18 +7,26 @@ export const addProduct = async (req, res, next) => {
     const { error, value } = addProductValidator.validate({
       ...req.body,
       // image: req.file?.filename,
-      pictures:req.files?.map((file) => {
+      pictures: req.files?.map((file) => {
         return file.filename;
-      })
+      }),
     });
     if (error) {
       return res.status(422).json(error);
     }
+    // Check if product does not exist
+
     // Save product info in database
-    const result = await ProductModel.create(value);
+    const result = await ProductModel.create({
+      ...value,
+      userId: req.auth.id,
+    });
     // Return response
     res.status(201).json(result);
   } catch (error) {
+    if (error.name === "MongooseError") {
+      return res.status(409).json(error.message);
+    }
     next(error);
   }
 };
@@ -43,6 +51,19 @@ export const countProducts = (req, res) => {
 
 export const updateProduct = (req, res) => {
   res.send(`Product with id ${req.params.id} updated!`);
+};
+
+export const replaceProduct = async (req, res, next) => {
+  // Validate incoming request body
+
+  // Perform model replace operation
+  const result = await ProductModel.findOneAndReplace(
+    { _id: req.params.id },
+    req.body,
+    { new: true }
+  );
+  // Return response
+  res.status(200).json(result);
 };
 
 export const deleteProduct = (req, res) => {
